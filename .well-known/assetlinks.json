@@ -1,0 +1,8 @@
+[{
+  "relation": ["delegate_permission/common.handle_all_urls"],
+  "target": {
+    "namespace": "android_app",
+    "package_name": "app.netlify.absenkaryawanmajalaya.twa",
+    "sha256_cert_fingerprints": ["A8:C8:C7:73:04:BE:A5:72:AA:9A:E0:EC:6E:98:DE:26:0B:DA:B2:7C:8D:75:0E:19:24:AF:A6:C0:E2:A4:36:99"]
+  }
+}]
