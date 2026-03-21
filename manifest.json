@@ -1,8 +1,8 @@
 {
-  "name": "Klinik Medika Sehat",
-  "short_name": "Klinik",
-  "description": "Aplikasi Absensi Klinik Medika Sehat",
-  "start_url": "/index.html",
+  "name": "Absensi Klinik Medika Sehat",
+  "short_name": "Absensi Klinik",
+  "description": "Aplikasi absensi karyawan Klinik Medika Sehat",
+  "start_url": "/absensi_majalaya.html",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#C0392B",
