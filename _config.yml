@@ -1,0 +1,8 @@
+include:
+  - .well-known
+```
+4. Klik **"Commit changes"**
+5. Tunggu ~2 menit
+6. Cek lagi di browser:
+```
+https://mhmmadhilmy.github.io/absenkaryawanmajalaya/.well-known/assetlinks.json
