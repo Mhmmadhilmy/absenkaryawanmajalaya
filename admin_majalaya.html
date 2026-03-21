@@ -1,0 +1,1386 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Admin — Klinik Medika Sehat</title>
+<style>
+:root{
+  --teal:#0d7377;--teal-d:#085558;--teal-l:#e0f4f4;--teal-m:#14a3a8;
+  --amber:#d97706;--amber-l:#fef3c7;
+  --red:#dc2626;--red-l:#fee2e2;
+  --green:#16a34a;--green-l:#dcfce7;
+  --purple:#7c3aed;--purple-l:#ede9fe;
+  --blue:#2563eb;--blue-l:#dbeafe;
+  --border:#e5e7eb;--text:#111827;--muted:#6b7280;
+  --bg:#f1f5f9;--card:#fff;
+  --sh:0 1px 3px rgba(0,0,0,.08);--sh-md:0 4px 16px rgba(0,0,0,.10);
+}
+*{box-sizing:border-box;margin:0;padding:0;touch-action:manipulation}
+input[type=number]{touch-action:auto}
+body{font-family:'Segoe UI',system-ui,sans-serif;background:var(--bg);color:var(--text);font-size:14px;
+  -webkit-text-size-adjust:100%;text-size-adjust:100%;}
+.hdr{background:#0a1628;color:#fff;position:sticky;top:0;z-index:100;box-shadow:0 2px 20px rgba(0,0,0,.3)}
+.hdr-top{padding:10px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.hdr-brand{display:flex;align-items:center;gap:10px;min-width:0}
+.hdr-ico{width:36px;height:36px;background:linear-gradient(135deg,#0d7377,#14b8a6);border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0;box-shadow:0 2px 8px rgba(13,115,119,.4)}
+.hdr-t{font-size:14px;font-weight:700;letter-spacing:.2px}
+.hdr-s{font-size:10px;color:rgba(255,255,255,.45);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hdr-right{display:flex;align-items:center;gap:6px;flex-shrink:0}
+.hdr-badge{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600}
+.conn-badge{padding:4px 10px;border-radius:20px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:4px}
+.conn-ok{background:rgba(22,163,74,.2);color:#4ade80;border:1px solid rgba(74,222,128,.2)}
+.conn-err{background:rgba(220,38,38,.2);color:#f87171;border:1px solid rgba(248,113,113,.2)}
+.conn-loading{background:rgba(37,99,235,.2);color:#93c5fd;border:1px solid rgba(147,197,253,.2)}
+.hdr-clock{text-align:right;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.08);padding:4px 10px;border-radius:10px}
+.hdr-time{font-size:16px;font-weight:700;font-variant-numeric:tabular-nums;letter-spacing:.5px;color:#fff}
+.hdr-date{font-size:9px;color:rgba(255,255,255,.4);margin-top:1px;white-space:nowrap}
+.tabs{display:flex;background:#0a1628;border-top:1px solid rgba(255,255,255,.06);padding:0 8px;gap:2px}
+.tab{flex:1;padding:10px 4px;text-align:center;font-size:11px;font-weight:600;color:rgba(255,255,255,.4);cursor:pointer;border-bottom:2px solid transparent;transition:all .2s;border-radius:6px 6px 0 0;display:flex;flex-direction:column;align-items:center;gap:2px}
+.tab .tab-ico{font-size:15px;line-height:1}
+.tab .tab-lbl{font-size:9px;font-weight:700;letter-spacing:.4px;text-transform:uppercase}
+.tab:hover{color:rgba(255,255,255,.7);background:rgba(255,255,255,.04)}
+.tab.on{color:#14b8a6;border-bottom-color:#14b8a6;background:rgba(20,184,166,.08)}
+.pg{display:none;padding-bottom:30px;min-height:calc(100vh - 110px)}.pg.on{display:block}
+.pbar{background:var(--teal-d);color:#fff;padding:9px 16px;display:flex;justify-content:space-between;align-items:center;font-size:12px}
+.pbar b{font-size:13px}
+.live-dot{display:inline-block;width:7px;height:7px;border-radius:50%;background:#4ade80;animation:pulse 2s infinite;margin-right:5px}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.mon-grid{padding:14px 16px;display:flex;flex-direction:column;gap:8px}
+.mon-kar{background:var(--card);border:1px solid var(--border);border-radius:13px;box-shadow:var(--sh);overflow:hidden}
+.mon-hd{display:flex;align-items:center;gap:11px;padding:11px 14px}
+.av{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex-shrink:0}
+.mon-nm{font-size:14px;font-weight:600}.mon-pos{font-size:11px;color:var(--muted);margin-top:2px}
+.mon-shifts{padding:0 14px 12px;display:flex;flex-direction:column;gap:5px}
+.srow{display:flex;align-items:center;justify-content:space-between;padding:8px 10px;border-radius:8px;background:#f9fafb;gap:8px}
+.srow.done{background:#f0fdf4}.srow.izin-bg{background:#fffbeb}.srow.sakit-bg{background:#eef2ff}.srow.alpha-bg{background:#fff1f2}
+.sdot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.dot-p{background:#f59e0b}.dot-s{background:#10b981}.dot-so{background:#8b5cf6}
+.sinfo{flex:1}.snm{font-size:12px;font-weight:600}.stm{font-size:10px;color:var(--muted)}
+.stag{font-size:10px;background:var(--purple-l);color:#5b21b6;padding:1px 6px;border-radius:10px;font-weight:600;margin-left:4px}
+.sact{display:flex;gap:5px;align-items:center;flex-wrap:wrap;justify-content:flex-end}
+.btn{padding:5px 10px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;border:none;transition:all .15s;white-space:nowrap}
+.btn-teal{background:var(--teal);color:#fff}.btn-teal:hover{background:var(--teal-d)}
+.btn-red{background:var(--red);color:#fff}.btn-red:hover{background:#b91c1c}
+.btn-purple{background:var(--purple);color:#fff}.btn-purple:hover{background:#6d28d9}
+.btn-gray{background:#e5e7eb;color:#374151}.btn-gray:hover{background:#d1d5db}
+.btn-outline{background:transparent;color:var(--teal);border:1.5px solid var(--teal)}.btn-outline:hover{background:var(--teal-l)}
+.btn-lg{padding:11px 20px;font-size:14px;border-radius:10px}.btn-block{width:100%}.btn-sm{padding:3px 8px;font-size:11px;border-radius:6px}
+.bdg{display:inline-flex;align-items:center;gap:3px;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.bdg-hadir{background:var(--green-l);color:#166534}.bdg-izin{background:var(--amber-l);color:#92400e}
+.bdg-sakit{background:var(--blue-l);color:#1e40af}.bdg-alpha{background:var(--red-l);color:#991b1b}
+.bdg-siang{background:#d1fae5;color:#065f46}.bdg-libur{background:var(--amber-l);color:#92400e}
+.sec{padding:14px 16px}.sec-title{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:10px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:12px;box-shadow:var(--sh)}
+.fg{margin-bottom:12px}
+.fg label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+.fg input,.fg select{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;color:var(--text);background:#fff;outline:none;transition:border .15s}
+.fg input:focus,.fg select:focus{border-color:var(--teal)}
+.fg-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.jday{border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:7px}
+.jday-hd{background:#f9fafb;padding:7px 12px;display:flex;align-items:center;justify-content:space-between}
+.jday-nm{font-weight:600;font-size:13px}
+.jday-pills{padding:8px 12px;display:flex;gap:7px;flex-wrap:wrap}
+.jpill{display:flex;align-items:center;gap:5px;padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;border:1.5px solid transparent;transition:all .15s;user-select:none}
+.jp-p{border-color:#f59e0b;color:#92400e;background:#fff}.jp-p.on{background:var(--amber-l)}
+.jp-s{border-color:#10b981;color:#065f46;background:#fff}.jp-s.on{background:var(--green-l)}
+.jp-so{border-color:#8b5cf6;color:#5b21b6;background:#fff}.jp-so.on{background:var(--purple-l)}
+.jday-sendiri{display:flex;flex-wrap:wrap;gap:8px;padding:0 12px 8px}
+.send-lbl{display:flex;align-items:center;gap:5px;font-size:11px;cursor:pointer;color:var(--purple);font-weight:600}
+.send-lbl input{accent-color:var(--purple);width:13px;height:13px}
+.fbar{display:flex;gap:8px;padding:10px 16px;background:var(--card);border-bottom:1px solid var(--border);flex-wrap:wrap;align-items:center}
+.fbar select,.fbar input{padding:7px 10px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;background:#fff;color:var(--text);outline:none}
+.fbar select:focus,.fbar input:focus{border-color:var(--teal)}
+.stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.stat{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:11px;text-align:center;box-shadow:var(--sh)}
+.stat-n{font-size:22px;font-weight:700}.stat-l{font-size:10px;color:var(--muted);margin-top:2px}
+.stat-g .stat-n{color:var(--green)}.stat-a .stat-n{color:var(--amber)}.stat-p .stat-n{color:var(--purple)}
+.rkar{background:var(--card);border:1px solid var(--border);border-radius:12px;margin-bottom:8px;overflow:hidden;box-shadow:var(--sh)}
+.rkar-hd{display:flex;align-items:center;gap:11px;padding:12px 14px;cursor:pointer}
+.rkar-hd:hover{background:#f9fafb}
+.rkar-body{display:none;border-top:1px solid var(--border)}.rkar-body.on{display:block}
+.score-big{font-size:20px;font-weight:700;color:var(--teal)}.score-lbl{font-size:10px;color:var(--muted)}
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:12px}
+table th{background:var(--teal);color:#fff;padding:8px 10px;text-align:left;font-size:11px;font-weight:600;white-space:nowrap}
+table td{padding:7px 10px;border-bottom:1px solid var(--border);vertical-align:middle}
+table tr:last-child td{border-bottom:none}
+table tr:hover td{background:#f9fafb}
+.mini{font-size:10px;font-weight:600;padding:2px 7px;border-radius:10px;display:inline-block}
+.mini-p{background:var(--amber-l);color:#92400e}.mini-s{background:var(--green-l);color:#166534}.mini-so{background:var(--purple-l);color:#5b21b6}
+.mini-izin{background:var(--amber-l);color:#92400e}.mini-sakit{background:var(--blue-l);color:#1e40af}.mini-alpha{background:var(--red-l);color:#991b1b}
+.mini-send{background:#f5f3ff;color:#5b21b6;border:1px solid #ddd6fe}
+.val-cell{font-weight:700;font-size:13px}
+.v1{color:var(--green)}.v15{color:var(--teal)}.v2{color:var(--blue)}.v05{color:var(--amber)}.v0{color:var(--muted)}
+.kar-item{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px;display:flex;align-items:center;gap:11px;margin-bottom:7px;box-shadow:var(--sh)}
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:200;align-items:flex-end;justify-content:center}
+.overlay.on{display:flex}
+.modal{background:var(--card);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:22px 20px 32px;animation:up .25s ease;max-height:88vh;overflow-y:auto}
+@keyframes up{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:4px;text-align:center}
+.modal-sub{font-size:12px;color:var(--muted);text-align:center;margin-bottom:18px}
+.ket-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.ket-btn{padding:12px;border-radius:10px;border:2px solid var(--border);background:#fff;font-size:13px;font-weight:600;cursor:pointer;text-align:center;transition:all .15s}
+.kb-izin{border-color:#f59e0b;color:#92400e}.kb-izin:hover{background:var(--amber-l)}
+.kb-sakit{border-color:#6366f1;color:#4338ca}.kb-sakit:hover{background:#e0e7ff}
+.kb-alpha{border-color:var(--red);color:var(--red)}.kb-alpha:hover{background:var(--red-l)}
+.kb-hapus{border-color:#9ca3af;color:#6b7280}.kb-hapus:hover{background:#f3f4f6}
+.pas-tiers{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:14px}
+.pt{text-align:center;padding:8px 4px;border-radius:8px;border:1.5px solid var(--border);font-size:11px}
+.pt.on{border-color:var(--teal);background:var(--teal-l)}
+.pt-val{font-weight:700;font-size:15px;color:var(--teal)}.pt-lbl{color:var(--muted);margin-top:2px}
+.pas-row{display:flex;align-items:center;gap:10px;margin:14px 0}
+.pas-row input[type=number]{font-size:28px;font-weight:700;text-align:center;width:120px;padding:10px;border:2px solid var(--border);border-radius:10px;color:var(--teal);outline:none}
+.pas-row input[type=number]:focus{border-color:var(--teal)}
+.pas-preview{flex:1;background:var(--teal-l);border-radius:10px;padding:10px 14px;text-align:center}
+.pv-sc{font-size:22px;font-weight:700;color:var(--teal)}.pv-l{font-size:11px;color:var(--teal-d);margin-top:2px}
+.send-sum{background:var(--purple-l);border:1px solid #ddd6fe;border-radius:8px;padding:7px 10px;font-size:12px;color:#5b21b6;display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap}
+.sanksi-sum{background:#fff1f2;border:1px solid #fecdd3;border-radius:8px;padding:7px 10px;font-size:12px;color:#991b1b;display:flex;align-items:center;gap:8px;margin-top:4px;flex-wrap:wrap}
+.sanksi-badge{display:inline-flex;align-items:center;gap:3px;background:#fee2e2;color:#991b1b;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.empty{text-align:center;padding:36px 20px;color:var(--muted)}
+.empty .ei{font-size:34px;margin-bottom:8px}
+.info-box{background:var(--teal-l);border:1px solid #99d6d8;border-radius:8px;padding:9px 12px;font-size:12px;color:var(--teal-d);margin-bottom:12px;line-height:1.5}
+.toast{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);background:#1f2937;color:#fff;padding:10px 20px;border-radius:20px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;max-width:90vw;text-align:center}
+.toast.on{opacity:1}
+.config-warning{background:#fff7ed;border:2px solid #fb923c;border-radius:12px;padding:20px;margin:16px;text-align:center}
+.config-warning h3{color:#9a3412;margin-bottom:8px}
+.config-warning p{font-size:13px;color:#7c2d12;line-height:1.6}
+.config-warning code{background:#fed7aa;padding:2px 6px;border-radius:4px;font-size:12px}
+@media print{.hdr,.tabs,.fbar,.btn,.sact{display:none!important}.pg{display:block!important}.rkar-body{display:block!important}body{background:#fff}}
+
+/* ── LOGIN SCREEN ── */
+#login-screen{display:none;position:fixed;inset:0;z-index:999;background:linear-gradient(160deg,#053f42 0%,#0d7377 55%,#0fa3a9 100%);align-items:center;justify-content:center;padding:24px}
+#login-screen.on{display:flex}
+.app-wrap{display:none}
+.app-wrap.on{display:block}
+.login-box{background:#fff;border-radius:20px;padding:32px 24px 28px;width:100%;max-width:360px;box-shadow:0 20px 60px rgba(0,0,0,.25)}
+.login-logo{text-align:center;margin-bottom:20px}
+.login-logo .ico{font-size:42px;display:block;margin-bottom:8px}
+.login-logo h2{font-size:18px;font-weight:700;color:var(--teal-d)}
+.login-logo p{font-size:12px;color:var(--muted);margin-top:3px}
+.login-fg{margin-bottom:14px}
+.login-fg label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin-bottom:5px;text-transform:uppercase;letter-spacing:.4px}
+.login-fg input{width:100%;padding:11px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:15px;color:var(--text);background:#fff;outline:none;transition:border .15s}
+.login-fg input:focus{border-color:var(--teal)}
+.login-err{background:#fee2e2;color:#991b1b;border-radius:8px;padding:9px 12px;font-size:13px;margin-bottom:14px;display:none;text-align:center}
+.login-err.on{display:block}
+.btn-login{width:100%;padding:13px;background:linear-gradient(135deg,var(--teal-d),var(--teal));color:#fff;border:none;border-radius:10px;font-size:15px;font-weight:700;cursor:pointer;transition:opacity .15s;margin-top:4px}
+.btn-login:hover{opacity:.9}
+.btn-login:disabled{opacity:.6;cursor:not-allowed}
+.login-footer{text-align:center;font-size:11px;color:var(--muted);margin-top:16px}
+.logout-btn{background:rgba(239,68,68,.15);border:1px solid rgba(239,68,68,.25);color:#f87171;padding:4px 10px;border-radius:14px;font-size:11px;font-weight:600;cursor:pointer;transition:all .15s}
+.logout-btn:hover{background:rgba(239,68,68,.25);border-color:rgba(239,68,68,.4)}
+</style>
+</head>
+<body>
+
+<!-- LOGIN SCREEN -->
+<div id="login-screen" class="on">
+  <div class="login-box">
+    <div class="login-logo">
+      <span class="ico">🏥</span>
+      <h2>Panel Admin</h2>
+      <p>Klinik Medika Sehat</p>
+    </div>
+    <div class="login-err" id="login-err">Email atau password salah</div>
+    <div class="login-fg">
+      <label>Email</label>
+      <input type="email" id="login-email" placeholder="Email admin" autocomplete="username">
+    </div>
+    <div class="login-fg">
+      <label>Password</label>
+      <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+    </div>
+    <button class="btn-login" id="btn-login">Masuk →</button>
+    <div class="login-footer">🔒 Akses khusus admin</div>
+  </div>
+</div>
+
+<div id="app-wrap" class="app-wrap">
+<div class="hdr">
+  <div class="hdr-top">
+    <div class="hdr-brand">
+      <div class="hdr-ico">🏥</div>
+      <div>
+        <div class="hdr-t">Panel Admin</div>
+        <div class="hdr-s">Klinik Medika Sehat</div>
+      </div>
+    </div>
+    <div class="hdr-right">
+      <div class="conn-badge conn-loading" id="conn-badge">⏳</div>
+      <div class="hdr-badge">
+        <span>👨‍💼</span><span>Admin</span>
+      </div>
+      <button class="logout-btn" id="btn-logout">Keluar</button>
+      <div class="hdr-clock">
+        <div class="hdr-time" id="clock"></div>
+        <div class="hdr-date" id="hdr-date"></div>
+      </div>
+    </div>
+  </div>
+  <div class="tabs">
+    <div class="tab on" onclick="showPg('monitor',this)">
+      <span class="tab-ico">👁</span>
+      <span class="tab-lbl">Monitor</span>
+    </div>
+    <div class="tab" onclick="showPg('jadwal',this)">
+      <span class="tab-ico">📅</span>
+      <span class="tab-lbl">Jadwal</span>
+    </div>
+    <div class="tab" onclick="showPg('rekap',this)">
+      <span class="tab-ico">📊</span>
+      <span class="tab-lbl">Rekap</span>
+    </div>
+    <div class="tab" onclick="showPg('karyawan',this)">
+      <span class="tab-ico">👥</span>
+      <span class="tab-lbl">Karyawan</span>
+    </div>
+  </div>
+</div>
+
+<!-- MONITOR -->
+<div class="pg on" id="pg-monitor">
+  <div class="pbar">
+    <div><div style="font-size:10px;opacity:.8">Periode Aktif</div><b id="period-lbl"></b></div>
+    <div><span class="live-dot"></span><span id="monitor-tgl" style="font-size:11px"></span></div>
+  </div>
+  <div class="mon-grid" id="monitor-list"></div>
+</div>
+
+<!-- JADWAL -->
+<div class="pg" id="pg-jadwal">
+  <div class="fbar">
+    <select id="jkar" onchange="renderJadwal()" style="flex:1"><option value="">-- Pilih Karyawan --</option></select>
+    <select id="jperiod" onchange="renderJadwal()" style="min-width:160px"></select>
+  </div>
+  <div class="sec">
+    <div class="info-box">💡 Tap shift untuk aktifkan/nonaktifkan. Centang <b>Jaga Sendiri</b> jika karyawan jaga tanpa rekan. Centang <b>🏖 Libur</b> jika karyawan tidak masuk hari itu.</div>
+    <div id="jadwal-content"><div class="empty"><div class="ei">📅</div><p>Pilih karyawan &amp; periode</p></div></div>
+    <div id="jsa" style="display:none;margin-top:10px">
+      <button class="btn btn-teal btn-lg btn-block" id="btn-save-jadwal">💾 Simpan Jadwal</button>
+    </div>
+  </div>
+</div>
+
+<!-- REKAP -->
+<div class="pg" id="pg-rekap">
+  <div class="fbar">
+    <select id="rekap-period" onchange="renderRekap()" style="flex:1"></select>
+    <select id="rekap-kar" onchange="renderRekap()" style="flex:1"><option value="">Semua Karyawan</option></select>
+    <button class="btn btn-outline" onclick="window.print()">🖨️</button>
+  </div>
+  <div class="sec" id="rekap-content"><div class="empty"><div class="ei">📊</div><p>Pilih periode</p></div></div>
+</div>
+
+<!-- KARYAWAN -->
+<div class="pg" id="pg-karyawan">
+  <div class="sec">
+    <div class="sec-title">Tambah Karyawan</div>
+    <div class="card" style="padding:16px;margin-bottom:16px">
+      <div class="fg-row">
+        <div class="fg"><label>Nama Lengkap</label><input id="kn" placeholder="Nama karyawan"></div>
+        <div class="fg"><label>Jabatan</label><input id="kj" placeholder="Dokter, Perawat…"></div>
+      </div>
+      <button class="btn btn-teal btn-lg btn-block" id="btn-tambah-kar">+ Tambah Karyawan</button>
+    </div>
+    <div class="sec-title">Daftar Karyawan (<span id="jml-kar">0</span>)</div>
+    <div id="daftar-kar"></div>
+  </div>
+</div>
+
+<!-- MODAL KETERANGAN -->
+<div class="overlay" id="m-ket">
+  <div class="modal">
+    <div class="modal-title">Keterangan</div><div class="modal-sub" id="m-ket-sub"></div>
+    <div class="ket-grid">
+      <button class="ket-btn kb-izin" id="kb-izin">🏖 Libur</button>
+      <button class="ket-btn kb-sakit" id="kb-sakit">🏥 Sakit</button>
+      <button class="ket-btn kb-alpha" id="kb-alpha">⚠️ Alpha</button>
+      <button class="ket-btn kb-hapus" id="kb-hapus">🗑️ Hapus</button>
+    </div>
+    <button class="btn btn-gray btn-block" id="kb-batal">Batal</button>
+  </div>
+</div>
+
+<!-- MODAL EDIT ABSENSI -->
+<div class="overlay" id="m-ea">
+  <div class="modal">
+    <div class="modal-title">Edit Absensi</div><div class="modal-sub" id="m-ea-sub"></div>
+    <div class="fg"><label>Jam Masuk</label><input type="time" id="ea-jam"></div>
+    <div class="fg"><label>Status</label>
+      <select id="ea-status">
+        <option value="hadir">Hadir</option><option value="izin">Izin</option>
+        <option value="sakit">Sakit</option><option value="alpha">Alpha</option>
+      </select>
+    </div>
+    <button class="btn btn-teal btn-lg btn-block" id="ea-save" style="margin-bottom:8px">💾 Simpan</button>
+    <button class="btn btn-red btn-block" id="ea-hapus" style="margin-bottom:8px">🗑️ Hapus Catatan</button>
+    <button class="btn btn-gray btn-block" id="ea-batal">Batal</button>
+  </div>
+</div>
+
+<!-- MODAL PASIEN -->
+<div class="overlay" id="m-pas">
+  <div class="modal">
+    <div class="modal-title">Input Jumlah Pasien</div><div class="modal-sub" id="m-pas-sub"></div>
+    <div class="pas-tiers">
+      <div class="pt" id="pt0"><div class="pt-val">0 shift</div><div class="pt-lbl">&lt;16 pasien</div></div>
+      <div class="pt" id="pt1"><div class="pt-val">¼ shift</div><div class="pt-lbl">16–30 pasien</div></div>
+      <div class="pt" id="pt2"><div class="pt-val">½ shift</div><div class="pt-lbl">31+ pasien</div></div>
+    </div>
+    <div class="pas-row">
+      <input type="number" id="pas-val" min="0" max="300" placeholder="0">
+      <div class="pas-preview"><div class="pv-sc" id="pv-sc">0</div><div class="pv-l">shift tambahan</div></div>
+    </div>
+    <button class="btn btn-teal btn-lg btn-block" id="pas-save" style="margin-bottom:8px">✓ Simpan</button>
+    <button class="btn btn-gray btn-block" id="pas-batal">Batal</button>
+  </div>
+</div>
+
+<!-- MODAL EDIT KARYAWAN -->
+<div class="overlay" id="m-ek">
+  <div class="modal">
+    <div class="modal-title">Edit Karyawan</div><div class="modal-sub" id="m-ek-sub"></div>
+    <div class="fg"><label>Nama Lengkap</label><input id="ek-nm"></div>
+    <div class="fg"><label>Jabatan</label><input id="ek-jb"></div>
+    <button class="btn btn-teal btn-lg btn-block" id="ek-save" style="margin-bottom:8px">💾 Simpan</button>
+    <button class="btn btn-gray btn-block" id="ek-batal">Batal</button>
+  </div>
+</div>
+
+<!-- MODAL SET PIN -->
+<div class="overlay" id="m-pin">
+  <div class="modal">
+    <div class="modal-title">🔐 Atur PIN</div>
+    <div class="modal-sub" id="m-pin-sub"></div>
+    <div class="fg">
+      <label>PIN Baru (4 angka)</label>
+      <input type="number" id="pin-input" placeholder="Contoh: 1234" maxlength="4"
+        style="font-size:28px;font-weight:700;text-align:center;letter-spacing:8px;color:var(--teal)"
+        oninput="if(this.value.length>4)this.value=this.value.slice(0,4)">
+    </div>
+    <div style="background:var(--teal-l);border-radius:8px;padding:9px 12px;font-size:12px;color:var(--teal-d);margin-bottom:14px">
+      💡 Karyawan wajib memasukkan PIN ini setiap kali absen. Rahasiakan PIN dari karyawan lain.
+    </div>
+    <button class="btn btn-teal btn-lg btn-block" id="pin-save" style="margin-bottom:8px">💾 Simpan PIN</button>
+    <button class="btn btn-gray btn-block" id="pin-batal-modal">Batal</button>
+  </div>
+</div>
+
+<!-- MODAL SANKSI POTONG GAJI -->
+<div class="overlay" id="m-sanksi">
+  <div class="modal">
+    <div class="modal-title">✂️ Catatan Sanksi</div>
+    <div class="modal-sub" id="m-sanksi-sub"></div>
+    <div class="fg">
+      <label>Jumlah Potongan (Rp)</label>
+      <input type="number" id="sanksi-nominal" placeholder="Contoh: 10000" min="0"
+        style="font-size:22px;font-weight:700;color:var(--red);text-align:center">
+    </div>
+    <div class="fg">
+      <label>Alasan Sanksi</label>
+      <input type="text" id="sanksi-alasan" placeholder="Contoh: Lupa menata meja">
+    </div>
+    <div id="sanksi-existing" style="display:none;background:#fff1f2;border:1px solid #fecdd3;border-radius:8px;padding:9px 12px;font-size:12px;color:#991b1b;margin-bottom:12px"></div>
+    <button class="btn btn-red btn-lg btn-block" id="sanksi-save" style="margin-bottom:8px">✂️ Simpan Sanksi</button>
+    <button class="btn btn-gray btn-block" id="sanksi-hapus" style="margin-bottom:8px;display:none">🗑️ Hapus Sanksi</button>
+    <button class="btn btn-gray btn-block" id="sanksi-batal">Batal</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+</div><!-- /app-wrap -->
+
+<!-- Firebase -->
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.0/firebase-database-compat.js"></script>
+<script>
+window.FIREBASE_CONFIG = {
+  apiKey: "AIzaSyAe8VG3_vbQs235meVuw_0TtB9FyCK1ijI",
+  authDomain: "absenkaryawanmajalaya.firebaseapp.com",
+  databaseURL: "https://absenkaryawanmajalaya-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "absenkaryawanmajalaya",
+  storageBucket: "absenkaryawanmajalaya.firebasestorage.app",
+  messagingSenderId: "505133058573",
+  appId: "1:505133058573:web:b0f8fee477f294c1952344"
+};
+</script>
+
+<script>
+// Fungsi global untuk navigasi tab
+function showPg(name,el){
+  document.querySelectorAll('.pg').forEach(function(p){p.classList.remove('on');});
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
+  document.getElementById('pg-'+name).classList.add('on');
+  el.classList.add('on');
+  if(window._appReady){
+    if(name==='monitor')window._renderMonitor();
+    if(name==='rekap')window._initRekap();
+    if(name==='karyawan')window._renderDaftarKar();
+    if(name==='jadwal')window._initJadwal();
+  }
+}
+function renderJadwal(){if(window._renderJadwal)window._renderJadwal();}
+function renderRekap(){if(window._renderRekap)window._renderRekap();}
+</script>
+
+<script>
+(function(){
+  // ── Config check ──────────────────────────────────────────
+  if (!window.FIREBASE_CONFIG || FIREBASE_CONFIG.apiKey.includes('GANTI')) {
+    document.body.innerHTML =
+      '<div style="padding:24px;max-width:480px;margin:40px auto">' +
+      '<div class="config-warning">' +
+      '<h3>⚙️ Konfigurasi Firebase Diperlukan</h3>' +
+      '<p>Buka file <code>firebase-config.js</code> dan isi dengan konfigurasi Firebase Anda.<br><br>' +
+      'Panduan: <a href="https://console.firebase.google.com" target="_blank">console.firebase.google.com</a><br><br>' +
+      'Setelah diisi, reload halaman ini.</p>' +
+      '</div></div>';
+    return;
+  }
+
+  // ── Firebase init ─────────────────────────────────────────
+  var app  = firebase.initializeApp(FIREBASE_CONFIG);
+  var auth = firebase.auth();
+  var db   = firebase.database();
+
+  // ── Login UI logic ────────────────────────────────────────
+  var loginScreen = document.getElementById('login-screen');
+  var loginErr    = document.getElementById('login-err');
+  var btnLogin    = document.getElementById('btn-login');
+  var btnLogout   = document.getElementById('btn-logout');
+  var appContent  = document.querySelector('.hdr');
+
+  function showLogin(){
+    loginScreen.classList.add('on');
+    document.getElementById('app-wrap').classList.remove('on');
+  }
+  function showApp(){
+    loginScreen.classList.remove('on');
+    document.getElementById('app-wrap').classList.add('on');
+    renderMonitor();
+  }
+
+  // Cek status auth
+  auth.onAuthStateChanged(function(user){
+    if(user){
+      showApp();
+    } else {
+      showLogin();
+    }
+  });
+
+  // Tombol login
+  btnLogin.addEventListener('click', function(){
+    var email = document.getElementById('login-email').value.trim();
+    var pass  = document.getElementById('login-pass').value;
+    if(!email||!pass){loginErr.textContent='Email dan password harus diisi';loginErr.classList.add('on');return;}
+    btnLogin.disabled=true;btnLogin.textContent='Memproses...';
+    loginErr.classList.remove('on');
+    auth.signInWithEmailAndPassword(email, pass)
+      .then(function(){
+        btnLogin.disabled=false;btnLogin.textContent='Masuk →';
+      })
+      .catch(function(e){
+        loginErr.textContent = e.code==='auth/invalid-credential'||e.code==='auth/wrong-password'||e.code==='auth/user-not-found'
+          ? 'Email atau password salah' : 'Error: '+e.message;
+        loginErr.classList.add('on');
+        btnLogin.disabled=false;btnLogin.textContent='Masuk →';
+      });
+  });
+
+  // Enter key di field password
+  document.getElementById('login-pass').addEventListener('keydown', function(e){
+    if(e.key==='Enter') btnLogin.click();
+  });
+  document.getElementById('login-email').addEventListener('keydown', function(e){
+    if(e.key==='Enter') document.getElementById('login-pass').focus();
+  });
+
+  // Tombol logout
+  btnLogout.addEventListener('click', function(){
+    if(!confirm('Yakin ingin keluar?')) return;
+    auth.signOut();
+  });
+
+  // ── Konstanta ─────────────────────────────────────────────
+  var SC={pagi:{label:'Pagi',time:'06.30–11.00',dot:'dot-p',jpill:'jp-p'},siang:{label:'Siang',time:'11.00–15.30',dot:'dot-s',jpill:'jp-s'},sore:{label:'Sore',time:'15.30–20.00',dot:'dot-so',jpill:'jp-so'}};
+  var SHIFTS=['pagi','siang','sore'];
+  var DAYS=['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
+  var MONTHS=['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'];
+  var COLORS=['#0d7377','#0a5c60','#7c3aed','#d97706','#dc2626','#059669','#2563eb','#db2777','#0891b2','#65a30d'];
+
+  // ── State cache ───────────────────────────────────────────
+  var _karyawan = [];
+  var _jadwal   = {};
+  var _absensiAll = {}; // semua tanggal
+  var _connected  = false;
+
+  // ── Utils ──────────────────────────────────────────────────
+  function today(){var d=new Date();return d.getFullYear()+'-'+('0'+(d.getMonth()+1)).slice(-2)+'-'+('0'+d.getDate()).slice(-2);}
+  function nowTime(){var n=new Date();return ('0'+n.getHours()).slice(-2)+':'+('0'+n.getMinutes()).slice(-2);}
+  function fmtDate(tgl){var dt=new Date(tgl+'T00:00:00');return DAYS[dt.getDay()]+', '+dt.getDate()+' '+MONTHS[dt.getMonth()]+' '+dt.getFullYear();}
+  function fmtShort(tgl){var dt=new Date(tgl+'T00:00:00');return dt.getDate()+' '+MONTHS[dt.getMonth()].slice(0,3);}
+  function inisial(n){return n.replace(/^(dr\.|drg\.|bidan\s)/i,'').trim().split(' ').slice(0,2).map(function(w){return w.charAt(0).toUpperCase();}).join('');}
+  function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');}
+  function toast(msg,ms){var t=document.getElementById('toast');t.textContent=msg;t.classList.add('on');setTimeout(function(){t.classList.remove('on');},ms||2500);}
+  function closeModal(id){document.getElementById(id).classList.remove('on');}
+  function getJadwal(karId,tgl){return _jadwal[karId+'_'+tgl]||{shifts:[],sendiri:{},libur:false};}
+  function getAbsen(karId,tgl,sh){return ((_absensiAll[tgl]||{})[karId+'_'+sh])||null;}
+  function isSendiri(karId,tgl,sh){var j=getJadwal(karId,tgl);return !!(j.sendiri&&j.sendiri[sh]);}
+  function calcSendiri(p){var v=p||0;if(v>=31)return 0.5;if(v>=16)return 0.25;return 0;}
+
+  // Format skor: 0.25→"¼", 1.25→"1¼", 0.5→"0,5", 1.5→"1,5"
+  function fmtSkor(v){
+    if(v===0)return '0';
+    if(v%1===0)return v.toFixed(0);
+    var whole=Math.floor(v),frac=+(v-whole).toFixed(2);
+    if(frac===0.25)return whole>0?(whole+'¼'):'¼';
+    if(frac===0.5)return whole>0?(whole+',5'):'0,5';
+    return v.toFixed(2).replace('.',',');
+  }
+
+  function showPg(name,el){ window.showPg(name,el); } // alias ke global
+
+  // ── Firebase listeners ─────────────────────────────────────
+  db.ref('.info/connected').on('value',function(snap){
+    _connected=!!snap.val();
+    var badge=document.getElementById('conn-badge');
+    if(_connected){badge.className='conn-badge conn-ok';badge.textContent='🟢 Online';}
+    else{badge.className='conn-badge conn-err';badge.textContent='🔴 Offline';}
+  });
+
+  db.ref('karyawan').on('value',function(snap){
+    _karyawan=[];
+    snap.forEach(function(c){_karyawan.push(c.val());});
+    if(document.getElementById('pg-monitor').classList.contains('on')) renderMonitor();
+    if(document.getElementById('pg-karyawan').classList.contains('on')) renderDaftarKar();
+  });
+
+  db.ref('jadwal').on('value',function(snap){
+    _jadwal=snap.val()||{};
+    if(document.getElementById('pg-monitor').classList.contains('on')) renderMonitor();
+  });
+
+  db.ref('absensi').on('value',function(snap){
+    _absensiAll=snap.val()||{};
+    if(document.getElementById('pg-monitor').classList.contains('on')) renderMonitor();
+  });
+
+  // ── Periode 15-15 ─────────────────────────────────────────
+  function getPeriods(){
+    var periods=[],now=new Date();
+    for(var i=-4;i<=2;i++){
+      var base=new Date(now.getFullYear(),now.getMonth()+i,15);
+      var s=new Date(base.getFullYear(),base.getMonth(),16);
+      var e=new Date(base.getFullYear(),base.getMonth()+1,15);
+      periods.push({
+        label:s.getDate()+' '+MONTHS[s.getMonth()].slice(0,3)+' '+s.getFullYear()+' – '+e.getDate()+' '+MONTHS[e.getMonth()].slice(0,3)+' '+e.getFullYear(),
+        start:s.getFullYear()+'-'+('0'+(s.getMonth()+1)).slice(-2)+'-16',
+        end:e.getFullYear()+'-'+('0'+(e.getMonth()+1)).slice(-2)+'-15'
+      });
+    }
+    return periods;
+  }
+  function getActivePeriod(){var t=today();return getPeriods().find(function(p){return t>=p.start&&t<=p.end;})||getPeriods()[3];}
+  function getDates(p){
+    var dates=[],cur=new Date(p.start+'T00:00:00'),end=new Date(p.end+'T00:00:00');
+    while(cur<=end){dates.push(cur.getFullYear()+'-'+('0'+(cur.getMonth()+1)).slice(-2)+'-'+('0'+cur.getDate()).slice(-2));cur.setDate(cur.getDate()+1);}
+    return dates;
+  }
+
+  // ── Hitungan hari kerja ────────────────────────────────────
+  function hitungHari(karId,dates){
+    var detail=[],pagiPool=[],totalHari=0,totalIzin=0,totalSakit=0,totalAlpha=0,totalSiang=0,totalLiburHari=0;
+    dates.forEach(function(tgl){
+      var jd=getJadwal(karId,tgl);
+
+      // Cek hari libur dari flag jadwal
+      if(jd.libur){
+        totalLiburHari++;
+        totalIzin++; // tetap hitung untuk kompatibilitas
+        detail.push({tgl:tgl,shifts:jd.shifts||[],hadirAll:[],sendiriSh:[],normalSh:[],normalShTanpaSiang:[],ket:{},notes:[{type:'libur-hari',score:0}],score:0,isLiburHari:true});
+        return;
+      }
+
+      if(!jd.shifts||!jd.shifts.length)return;
+      var hadirAll=[],ketMap={};
+      var sudahLiburHari=false;
+      jd.shifts.forEach(function(sh){
+        var a=getAbsen(karId,tgl,sh);
+        if(a){
+          if(a.status==='hadir'){
+            hadirAll.push(sh);
+            if(sh==='siang') totalSiang++;
+          } else {
+            var ketDisplay = a.status==='izin' ? 'libur' : a.status==='sakit' ? 'sakit' : null;
+            if(ketDisplay) ketMap[sh]=ketDisplay;
+            if(a.status==='izin'&&!sudahLiburHari){sudahLiburHari=true;totalLiburHari++;totalIzin++;}
+            else if(a.status==='sakit') totalSakit++;
+            else if(a.status==='alpha') totalAlpha++;
+          }
+        }
+      });
+      var sendiriSh=hadirAll.filter(function(sh){return isSendiri(karId,tgl,sh);});
+      var normalSh=hadirAll.filter(function(sh){return !isSendiri(karId,tgl,sh);});
+      // Untuk hitungan pair pagi-sore: sendiri tetap dihitung sebagai hadir biasa
+      // sehingga pagi+sore tetap = 1 hari, bonus sendiri ditambahkan di atas
+      var semuaHadirSh=hadirAll; // pagi+sore termasuk yang sendiri
+      var normalShTanpaSiang=semuaHadirSh.filter(function(sh){return sh!=='siang';});
+      var dayScore=0,notes=[];
+
+      // Hitung bonus jaga sendiri (di luar hitungan pair)
+      sendiriSh.forEach(function(sh){
+        var a=getAbsen(karId,tgl,sh),pas=a?a.pasien:null,sc=pas!=null?calcSendiri(pas):0;
+        dayScore+=sc;notes.push({type:'sendiri',shift:sh,pasien:pas,score:sc,needsInput:pas===null||pas===undefined});
+      });
+
+      if(normalSh.indexOf('siang')!==-1||sendiriSh.indexOf('siang')!==-1){
+        notes.push({type:'siang-shift',score:0});
+      }
+
+      // Hitung pair pagi-sore (termasuk yang sendiri)
+      var pagiHadir=normalShTanpaSiang.indexOf('pagi')!==-1;
+      var soreHadir=normalShTanpaSiang.indexOf('sore')!==-1;
+      if(pagiHadir&&soreHadir){
+        dayScore+=1;notes.push({type:'pair',score:1});
+      } else if(pagiHadir&&!soreHadir){
+        pagiPool.push({tgl:tgl,idx:detail.length});notes.push({type:'pool-pagi',score:0,pending:true});
+      } else if(soreHadir&&!pagiHadir){
+        if(pagiPool.length>0){
+          var pp=pagiPool.shift(),pd=detail[pp.idx];
+          if(pd){var pn=pd.notes.find(function(n){return n.type==='pool-pagi';});if(pn){pn.pending=false;pn.score=0.5;pn.pairedWith=tgl;pd.score+=0.5;}}
+          totalHari+=0.5;dayScore+=0.5;notes.push({type:'pool-sore',score:0.5,pairedWith:pp.tgl});
+        } else {
+          pagiPool.push({tgl:tgl,idx:detail.length,isSore:true});notes.push({type:'pool-sore-pend',score:0,pending:true});
+        }
+      }
+      totalHari+=dayScore;
+      detail.push({tgl:tgl,shifts:jd.shifts,hadirAll:hadirAll,sendiriSh:sendiriSh,normalSh:normalSh,normalShTanpaSiang:normalShTanpaSiang,ket:ketMap,notes:notes,score:dayScore,isLiburHari:false});
+    });
+    pagiPool.forEach(function(p){var pd=detail[p.idx];if(pd){var pn=pd.notes.find(function(n){return n.pending;});if(pn){pn.pending=false;pn.score=0.5;pd.score+=0.5;totalHari+=0.5;}}});
+    return{totalHari:totalHari,totalIzin:totalIzin,totalSakit:totalSakit,totalAlpha:totalAlpha,totalSiang:totalSiang,totalLiburHari:totalLiburHari,detail:detail};
+  }
+
+  // ── CLOCK ─────────────────────────────────────────────────
+  function updateClock(){
+    var now=new Date();
+    document.getElementById('clock').textContent=('0'+now.getHours()).slice(-2)+':'+('0'+now.getMinutes()).slice(-2)+':'+('0'+now.getSeconds()).slice(-2);
+    document.getElementById('hdr-date').textContent=fmtDate(today());
+  }
+  setInterval(updateClock,1000);updateClock();
+  document.getElementById('period-lbl').textContent=getActivePeriod().label;
+
+  // ── MONITOR ───────────────────────────────────────────────
+  function renderMonitor(){
+    var tgl=today();
+    document.getElementById('monitor-tgl').textContent=fmtDate(tgl);
+    var cont=document.getElementById('monitor-list');
+    var html='';
+    _karyawan.forEach(function(kar){
+      var jd=getJadwal(kar.id,tgl);
+      // Tampilkan jika ada shift ATAU ditandai libur
+      if((!jd.shifts||!jd.shifts.length)&&!jd.libur)return;
+      // Jika libur tanpa shift — tampilkan card libur langsung
+      if(jd.libur&&(!jd.shifts||!jd.shifts.length)){
+        html+='<div class="mon-kar"><div class="mon-hd"><div class="av" style="background:'+kar.color+'">'+inisial(kar.nama)+'</div><div><div class="mon-nm">'+esc(kar.nama)+'</div><div class="mon-pos">'+esc(kar.jabatan)+'</div></div></div>'+
+          '<div class="mon-shifts"><div class="srow izin-bg"><div class="sdot dot-p" style="background:#f59e0b"></div><div class="sinfo"><div class="snm">Libur</div><div class="stm">Hari ini libur</div></div><div class="sact"><span class="bdg" style="background:#fef3c7;color:#92400e">🏖 Libur</span></div></div></div></div>';
+        return;
+      }
+      var rows='';
+      // Cek sanksi hari ini untuk karyawan ini
+      var sanksiHariIni=(_absensiAll[tgl]||{})[kar.id+'_sanksi']||null;
+      var sanksiHtml='';
+      if(sanksiHariIni){
+        sanksiHtml='<div class="sanksi-sum">✂️ Potong gaji <b>Rp '+Number(sanksiHariIni.nominal).toLocaleString('id-ID')+'</b> — '+esc(sanksiHariIni.alasan)+
+          ' <button class="btn btn-sm" style="background:#fee2e2;color:#991b1b;border:none;font-size:11px" data-action="sanksi" data-kid="'+kar.id+'" data-tgl="'+tgl+'">✎ Edit</button></div>';
+      }
+      var sanksiBtn='<button class="btn btn-sm" style="background:#fee2e2;color:#991b1b;border:1px solid #fecdd3;font-size:11px" data-action="sanksi" data-kid="'+kar.id+'" data-tgl="'+tgl+'">✂️ Sanksi</button>';
+      jd.shifts.forEach(function(sh){
+        var s=SC[sh],ab=getAbsen(kar.id,tgl,sh),send=isSendiri(kar.id,tgl,sh);
+        var rcls='srow',actHtml='',extraHtml='';
+        if(!ab){
+          // Belum ada keterangan — tampilkan tombol Libur langsung + tombol Ket
+          actHtml=
+            '<button class="btn btn-sm" style="background:#fef3c7;color:#92400e;border:1px solid #f59e0b" data-action="libur" data-kid="'+kar.id+'" data-tgl="'+tgl+'" data-sh="'+sh+'">🏖 Libur</button>'+
+            '<button class="btn btn-gray btn-sm" data-action="ket" data-kid="'+kar.id+'" data-tgl="'+tgl+'" data-sh="'+sh+'">✎ Ket</button>';
+        } else if(ab.status==='hadir'){
+          rcls+=' done';
+          var pi=send&&ab.pasien!=null?' · '+ab.pasien+' px':'';
+          actHtml='<span class="bdg bdg-hadir">✓ '+ab.jam+pi+'</span>'+
+                  '<button class="btn btn-gray btn-sm" data-action="edit-ab" data-kid="'+kar.id+'" data-tgl="'+tgl+'" data-sh="'+sh+'">✎</button>';
+          if(send&&(ab.pasien===null||ab.pasien===undefined)){
+            extraHtml='<div class="send-sum">⚠️ Belum input pasien '+
+              '<button class="btn btn-purple btn-sm" data-action="pasien" data-kid="'+kar.id+'" data-tgl="'+tgl+'" data-sh="'+sh+'">Input Pasien</button></div>';
+          } else if(send&&ab.pasien!=null){
+            var sc=calcSendiri(ab.pasien);
+            extraHtml='<div class="send-sum">👤 Jaga sendiri · '+ab.pasien+' pasien · <b>'+fmtSkor(sc)+' shift</b> '+
+              (sc===0?'<span style="color:#dc2626;font-size:10px">(belum capai target 16)</span>':sc===0.25?'<span style="color:#d97706;font-size:10px">(16 pasien = ¼ hari)</span>':'<span style="color:#16a34a;font-size:10px">(31 pasien = ½ hari)</span>')+' '+
+              '<button class="btn btn-gray btn-sm" data-action="pasien" data-kid="'+kar.id+'" data-tgl="'+tgl+'" data-sh="'+sh+'">Edit</button></div>';
+          }
+        } else if(ab.status==='izin'){
+          rcls+=' izin-bg';
+          actHtml='<span class="bdg" style="background:#fef3c7;color:#92400e">🏖 Libur</span>'+
+                  '<button class="btn btn-gray btn-sm" data-action="edit-ab" data-kid="'+kar.id+'" data-tgl="'+tgl+'" data-sh="'+sh+'">✎</button>';
+        } else if(ab.status==='sakit'){
+          rcls+=' sakit-bg';
+          actHtml='<span class="bdg bdg-sakit">🏥 Sakit</span>'+
+                  '<button class="btn btn-gray btn-sm" data-action="edit-ab" data-kid="'+kar.id+'" data-tgl="'+tgl+'" data-sh="'+sh+'">✎</button>';
+        } else if(ab.status==='alpha'){
+          rcls+=' alpha-bg';
+          actHtml='<span class="bdg bdg-alpha">⚠ Alpha</span>'+
+                  '<button class="btn btn-gray btn-sm" data-action="edit-ab" data-kid="'+kar.id+'" data-tgl="'+tgl+'" data-sh="'+sh+'">✎</button>';
+        }
+        rows+='<div class="'+rcls+'"><div class="sdot '+s.dot+'"></div><div class="sinfo"><div class="snm">'+s.label+'</div><div class="stm">'+s.time+(send?'<span class="stag">👤 Sendiri</span>':'')+'</div></div><div class="sact">'+actHtml+'</div></div>'+extraHtml;
+      });
+      html+='<div class="mon-kar">'+
+        '<div class="mon-hd">'+
+          '<div class="av" style="background:'+kar.color+'">'+inisial(kar.nama)+'</div>'+
+          '<div style="flex:1"><div class="mon-nm">'+esc(kar.nama)+'</div><div class="mon-pos">'+esc(kar.jabatan)+'</div></div>'+
+          sanksiBtn+
+        '</div>'+
+        (sanksiHtml?'<div style="padding:0 14px 4px">'+sanksiHtml+'</div>':'')+
+        '<div class="mon-shifts">'+rows+'</div></div>';
+    });
+    if(!html)html='<div class="empty"><div class="ei">📋</div><p>Tidak ada karyawan terjadwal hari ini.<br>Atur jadwal di menu Jadwal.</p></div>';
+    cont.innerHTML=html;
+
+    // Event delegation — gunakan string ID
+    cont.querySelectorAll('[data-action]').forEach(function(btn){
+      btn.addEventListener('click',function(e){
+        var el=e.currentTarget;
+        var action=el.getAttribute('data-action');
+        var kid=el.getAttribute('data-kid'); // string, bukan parseInt
+        var tgl=el.getAttribute('data-tgl');
+        var sh=el.getAttribute('data-sh');
+        if(action==='libur')setLiburLangsung(kid,tgl,sh);
+        else if(action==='ket')openKetModal(kid,tgl,sh);
+        else if(action==='edit-ab')openEditAbsen(kid,tgl,sh);
+        else if(action==='pasien')openPasModal(kid,tgl,sh);
+        else if(action==='sanksi')openSanksiModal(kid,tgl);
+      });
+    });
+  }
+
+  // Set libur langsung tanpa buka modal
+  function setLiburLangsung(karId,tgl,sh){
+    var k=_karyawan.find(function(x){return String(x.id)===String(karId);});
+    var nama=k?k.nama:'karyawan';
+    if(!confirm('Set '+nama+' — '+SC[sh].label+' sebagai Libur?'))return;
+    db.ref('absensi/'+tgl+'/'+karId+'_'+sh).set({status:'izin',jam:'-',pasien:null})
+      .then(function(){toast('🏖 '+nama+' — '+SC[sh].label+' ditandai Libur ✓');})
+      .catch(function(e){toast('Error: '+e.message);});
+  }
+
+  // ── Modal Keterangan ──────────────────────────────────────
+  var _ketCtx=null;
+  function openKetModal(karId,tgl,sh){
+    var k=_karyawan.find(function(x){return String(x.id)===String(karId);});
+    _ketCtx={karId:karId,tgl:tgl,sh:sh};
+    document.getElementById('m-ket-sub').textContent=(k?k.nama:'?')+' · '+SC[sh].label+' '+fmtShort(tgl);
+    document.getElementById('m-ket').classList.add('on');
+  }
+  function setKet(status){
+    if(!_ketCtx)return;
+    var ref=db.ref('absensi/'+_ketCtx.tgl+'/'+_ketCtx.karId+'_'+_ketCtx.sh);
+    if(status===null){ref.remove();}
+    else{ref.set({status:status,jam:nowTime(),pasien:null});}
+    closeModal('m-ket');_ketCtx=null;toast(status?'Keterangan: '+status:'Catatan dihapus');
+  }
+  document.getElementById('kb-izin').addEventListener('click',function(){setKet('izin');});
+  document.getElementById('kb-sakit').addEventListener('click',function(){setKet('sakit');});
+  document.getElementById('kb-alpha').addEventListener('click',function(){setKet('alpha');});
+  document.getElementById('kb-hapus').addEventListener('click',function(){setKet(null);});
+  document.getElementById('kb-batal').addEventListener('click',function(){closeModal('m-ket');});
+
+  // ── Modal Edit Absensi ────────────────────────────────────
+  var _eaCtx=null;
+  function openEditAbsen(karId,tgl,sh){
+    var a=getAbsen(karId,tgl,sh),k=_karyawan.find(function(x){return String(x.id)===String(karId);});
+    _eaCtx={karId:karId,tgl:tgl,sh:sh,cur:a||{}};
+    document.getElementById('m-ea-sub').textContent=(k?k.nama:'?')+' · '+SC[sh].label+' '+fmtShort(tgl);
+    document.getElementById('ea-status').value=a?a.status:'hadir';
+    document.getElementById('ea-jam').value=a&&a.jam?a.jam:'';
+    document.getElementById('m-ea').classList.add('on');
+  }
+  document.getElementById('ea-save').addEventListener('click',function(){
+    if(!_eaCtx)return;
+    var d=Object.assign({},_eaCtx.cur,{status:document.getElementById('ea-status').value,jam:document.getElementById('ea-jam').value});
+    db.ref('absensi/'+_eaCtx.tgl+'/'+_eaCtx.karId+'_'+_eaCtx.sh).set(d);
+    closeModal('m-ea');_eaCtx=null;toast('Absensi diperbarui ✓');
+  });
+  document.getElementById('ea-hapus').addEventListener('click',function(){
+    if(!_eaCtx)return;
+    db.ref('absensi/'+_eaCtx.tgl+'/'+_eaCtx.karId+'_'+_eaCtx.sh).remove();
+    closeModal('m-ea');_eaCtx=null;toast('Catatan dihapus');
+  });
+  document.getElementById('ea-batal').addEventListener('click',function(){closeModal('m-ea');});
+
+  // ── Modal Pasien ──────────────────────────────────────────
+  var _pasCtx=null;
+  function openPasModal(karId,tgl,sh){
+    var a=getAbsen(karId,tgl,sh),k=_karyawan.find(function(x){return String(x.id)===String(karId);});
+    _pasCtx={karId:karId,tgl:tgl,sh:sh,cur:a||{status:'hadir',jam:nowTime()}};
+    document.getElementById('m-pas-sub').textContent=(k?k.nama:'?')+' · '+SC[sh].label+' '+fmtShort(tgl)+' · Jaga Sendiri';
+    document.getElementById('pas-val').value=a&&a.pasien!=null?a.pasien:'';
+    updPas();
+    document.getElementById('m-pas').classList.add('on');
+  }
+  function updPas(){
+    var v=parseInt(document.getElementById('pas-val').value)||0,sc=calcSendiri(v);
+    document.getElementById('pv-sc').textContent=fmtSkor(sc);
+    ['pt0','pt1','pt2'].forEach(function(id){document.getElementById(id).classList.remove('on');});
+    if(v>=31)document.getElementById('pt2').classList.add('on');
+    else if(v>=16)document.getElementById('pt1').classList.add('on');
+    else document.getElementById('pt0').classList.add('on');
+  }
+  document.getElementById('pas-val').addEventListener('input',updPas);
+  document.getElementById('pas-save').addEventListener('click',function(){
+    if(!_pasCtx)return;
+    var v=parseInt(document.getElementById('pas-val').value)||0;
+    var d=Object.assign({},_pasCtx.cur,{pasien:v});
+    db.ref('absensi/'+_pasCtx.tgl+'/'+_pasCtx.karId+'_'+_pasCtx.sh).set(d)
+      .then(function(){
+        toast('Pasien: '+v+' → '+fmtSkor(calcSendiri(v))+' shift ✓');
+        // Refresh rekap jika sedang terbuka
+        if(document.getElementById('pg-rekap').classList.contains('on')){
+          renderRekap();
+        }
+      })
+      .catch(function(e){toast('Error: '+e.message);});
+    closeModal('m-pas');_pasCtx=null;
+  });
+  document.getElementById('pas-batal').addEventListener('click',function(){closeModal('m-pas');});
+
+  // ── JADWAL ────────────────────────────────────────────────
+  var _JT={};
+  function initJadwal(){
+    var sel=document.getElementById('jkar');
+    sel.innerHTML='<option value="">-- Pilih Karyawan --</option>'+
+      _karyawan.map(function(k){return '<option value="'+k.id+'">'+esc(k.nama)+'</option>';}).join('');
+    // Isi dropdown periode 16-15
+    var pSel=document.getElementById('jperiod');
+    var periods=getPeriods();
+    pSel.innerHTML=periods.map(function(p,i){return '<option value="'+i+'">'+p.label+'</option>';}).join('');
+    var active=getActivePeriod();
+    var idx=periods.findIndex(function(p){return p.start===active.start;});
+    if(idx>=0)pSel.value=idx;
+    renderJadwal();
+  }
+  function renderJadwal(){
+    var karId=document.getElementById('jkar').value;
+    var pidx=document.getElementById('jperiod')?document.getElementById('jperiod').value:'';
+    var cont=document.getElementById('jadwal-content'),sa=document.getElementById('jsa');
+    if(!karId||pidx===''){cont.innerHTML='<div class="empty"><div class="ei">📅</div><p>Pilih karyawan &amp; periode</p></div>';sa.style.display='none';return;}
+    var period=getPeriods()[parseInt(pidx)];
+    var dates=getDates(period);
+    _JT={};var html='';
+    html+='<div style="font-size:12px;font-weight:700;color:var(--teal);margin-bottom:10px;padding:4px 0">📅 '+period.label+'</div>';
+    dates.forEach(function(tgl){
+      var dt=new Date(tgl+'T00:00:00'),jd=getJadwal(karId,tgl),isSun=dt.getDay()===0;
+      var isLiburHari=!!(jd.libur);
+      var liburShift=Object.assign({},jd.liburShift||{}); // libur per shift
+      _JT[tgl]={shifts:jd.shifts?jd.shifts.slice():[],sendiri:Object.assign({},jd.sendiri||{}),libur:isLiburHari,liburShift:liburShift};
+
+      var dayStyle=isLiburHari?'background:#fffbeb;border-color:#f59e0b':isSun?'opacity:.55':'';
+      var liburBadge=isLiburHari?'<span style="background:#fef3c7;color:#92400e;font-size:11px;font-weight:700;padding:2px 8px;border-radius:10px">🏖 Libur Semua</span>':'';
+
+      var pills=isLiburHari
+        ?'<div style="font-size:12px;color:#92400e;padding:4px 2px">Karyawan libur semua shift hari ini</div>'
+        :buildPillsHtml(tgl);
+
+      var slbls=isLiburHari?'':buildSendiriHtml(tgl);
+
+      var liburBtn='<label style="display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:'+(isLiburHari?'#92400e':'var(--muted)')+';cursor:pointer;padding:0 12px 6px">'+
+        '<input type="checkbox" id="lb-'+tgl+'" data-tgl="'+tgl+'" '+(isLiburHari?'checked':'')+' style="accent-color:#f59e0b;width:14px;height:14px">'+
+        '🏖 Libur semua shift hari ini</label>';
+
+      var tglLbl=DAYS[dt.getDay()]+', '+dt.getDate()+' '+MONTHS[dt.getMonth()].slice(0,3)+' '+dt.getFullYear();
+
+      html+='<div class="jday" style="'+dayStyle+'">'+
+        '<div class="jday-hd">'+
+          '<div class="jday-nm" style="'+(isSun?'color:var(--red)':'')+'">'+tglLbl+'</div>'+
+          '<div style="font-size:10px;color:var(--muted)">'+(isSun?'Minggu ':'')+liburBadge+'</div>'+
+        '</div>'+
+        liburBtn+
+        '<div class="jday-pills" id="pills-'+tgl+'">'+pills+'</div>'+
+        '<div class="jday-sendiri" id="sendiri-'+tgl+'">'+slbls+'</div>'+
+      '</div>';
+    });
+    cont.innerHTML=html;sa.style.display='block';
+
+
+    // ── EVENT DELEGATION — satu listener untuk seluruh jadwal ──
+    // Ini lebih stabil dari attach per elemen, tidak ada masalah scope
+
+    // 1. Pill toggle (aktifkan/nonaktifkan shift)
+    cont.addEventListener('click', function(e){
+      var pill = e.target.closest('.jpill');
+      if(!pill) return;
+      var tgl = pill.getAttribute('data-tgl');
+      var sh  = pill.getAttribute('data-sh');
+      if(!tgl||!sh||!_JT[tgl]) return;
+      if(_JT[tgl].libur) return; // skip jika libur semua
+      var idx = _JT[tgl].shifts.indexOf(sh);
+      if(idx>=0){
+        // Nonaktifkan shift
+        _JT[tgl].shifts.splice(idx,1);
+        pill.classList.remove('on');
+        pill.style.opacity='1';
+        pill.style.textDecoration='none';
+        if(_JT[tgl].sendiri) _JT[tgl].sendiri[sh]=false;
+        if(_JT[tgl].liburShift) _JT[tgl].liburShift[sh]=false;
+        // Sembunyikan tombol libur shift dan sendiri
+        var liburLbl=pill.parentElement.querySelector('.libur-sh-lbl');
+        if(liburLbl){liburLbl.style.display='none';}
+        var sl=document.getElementById('sl-'+tgl+'-'+sh);
+        if(sl) sl.style.display='none';
+        // Ganti label libur dengan teks "Tap untuk aktifkan"
+        var hint=pill.parentElement.querySelector('.tap-hint');
+        if(hint) hint.style.display='';
+      } else {
+        // Aktifkan shift
+        _JT[tgl].shifts.push(sh);
+        pill.classList.add('on');
+        pill.style.opacity='1';
+        pill.style.textDecoration='none';
+        // Tampilkan tombol libur shift dan sendiri
+        var liburLbl2=pill.parentElement.querySelector('.libur-sh-lbl');
+        if(liburLbl2){liburLbl2.style.display='flex';}
+        var sl2=document.getElementById('sl-'+tgl+'-'+sh);
+        if(sl2) sl2.style.display='flex';
+        var hint2=pill.parentElement.querySelector('.tap-hint');
+        if(hint2) hint2.style.display='none';
+      }
+    });
+
+    // 2. Libur per shift checkbox
+    cont.addEventListener('change', function(e){
+      var cb = e.target;
+
+      // Libur semua shift (checkbox id="lb-TANGGAL")
+      if(cb.id && cb.id.indexOf('lb-')===0){
+        var tgl = cb.getAttribute('data-tgl');
+        if(!_JT[tgl]) return;
+        _JT[tgl].libur = cb.checked;
+        if(cb.checked) _JT[tgl].liburShift = {};
+        var pillsDiv  = document.getElementById('pills-'+tgl);
+        var sendiriDiv= document.getElementById('sendiri-'+tgl);
+        var lbl       = cb.parentElement;
+        if(cb.checked){
+          pillsDiv.innerHTML='<div style="font-size:12px;color:#92400e;padding:4px 2px">Karyawan libur semua shift hari ini</div>';
+          if(sendiriDiv) sendiriDiv.innerHTML='';
+          if(lbl) lbl.style.color='#92400e';
+        } else {
+          // Rebuild pills dengan semua 3 shift
+          pillsDiv.innerHTML = buildPillsHtml(tgl);
+          if(sendiriDiv) sendiriDiv.innerHTML = buildSendiriHtml(tgl);
+          if(lbl) lbl.style.color='var(--muted)';
+        }
+        return;
+      }
+
+      // Libur per shift (class libur-sh-cb)
+      if(cb.classList && cb.classList.contains('libur-sh-cb')){
+        var tgl2 = cb.getAttribute('data-tgl');
+        var sh2  = cb.getAttribute('data-sh');
+        if(!_JT[tgl2]) return;
+        if(!_JT[tgl2].liburShift) _JT[tgl2].liburShift={};
+        _JT[tgl2].liburShift[sh2] = cb.checked;
+        // Update tampilan pill
+        var pillRow = cb.closest('[data-pill-row]');
+        var pill2   = pillRow ? pillRow.querySelector('.jpill') : null;
+        if(pill2){
+          pill2.style.opacity   = cb.checked ? '.5' : '1';
+          pill2.style.textDecoration = cb.checked ? 'line-through' : 'none';
+        }
+        var liburLbl3 = cb.parentElement;
+        if(liburLbl3) liburLbl3.style.color = cb.checked ? '#92400e' : 'var(--muted)';
+        return;
+      }
+
+      // Sendiri checkbox
+      if(cb.getAttribute('data-tgl') && cb.getAttribute('data-sh') && !cb.classList.contains('libur-sh-cb')){
+        var tgl3 = cb.getAttribute('data-tgl');
+        var sh3  = cb.getAttribute('data-sh');
+        if(!_JT[tgl3]) return;
+        if(!_JT[tgl3].sendiri) _JT[tgl3].sendiri={};
+        _JT[tgl3].sendiri[sh3] = cb.checked;
+      }
+    });
+  }
+
+  // Helper: build HTML pills untuk satu tanggal
+  function buildPillsHtml(tgl){
+    return SHIFTS.map(function(sh){
+      var on = _JT[tgl].shifts.indexOf(sh)!==-1;
+      var isLiburSh = !!(_JT[tgl].liburShift||{})[sh];
+      return '<div data-pill-row="1" style="display:flex;align-items:center;gap:6px;margin-bottom:4px">'+
+        '<div class="jpill '+SC[sh].jpill+(on?' on':'')+'" data-tgl="'+tgl+'" data-sh="'+sh+'" style="'+(isLiburSh&&on?'opacity:.5;text-decoration:line-through':'')+'">'+
+          SC[sh].label+' <span style="font-size:10px;opacity:.7">'+SC[sh].time+'</span>'+
+        '</div>'+
+        '<label class="libur-sh-lbl" style="display:'+(on?'flex':'none')+';align-items:center;gap:4px;font-size:11px;font-weight:600;cursor:pointer;color:'+(isLiburSh?'#92400e':'var(--muted)')+'">'+
+          '<input type="checkbox" class="libur-sh-cb" data-tgl="'+tgl+'" data-sh="'+sh+'" '+(isLiburSh?'checked':'')+' style="accent-color:#f59e0b;width:13px;height:13px">'+
+          '🏖 Libur shift ini'+
+        '</label>'+
+        '<span class="tap-hint" style="font-size:10px;color:var(--muted);'+(on?'display:none':'')+'">Tap untuk aktifkan</span>'+
+      '</div>';
+    }).join('');
+  }
+
+  // Helper: build HTML sendiri checkboxes
+  function buildSendiriHtml(tgl){
+    return SHIFTS.map(function(sh){
+      var on=_JT[tgl].shifts.indexOf(sh)!==-1,isSend=(_JT[tgl].sendiri||{})[sh];
+      return '<label class="send-lbl" id="sl-'+tgl+'-'+sh+'" style="display:'+(on?'flex':'none')+'"><input type="checkbox" data-tgl="'+tgl+'" data-sh="'+sh+'"'+(isSend?' checked':'')+'>&#128100; Sendiri ('+SC[sh].label+')</label>';
+    }).join('');
+  }
+  document.getElementById('btn-save-jadwal').addEventListener('click',function(){
+    var karId=document.getElementById('jkar').value;
+    if(!karId)return;
+    var updates={};
+    Object.keys(_JT).forEach(function(tgl){
+      var key='jadwal/'+karId+'_'+tgl;
+      var d=_JT[tgl];
+      if(d.libur){
+        // Libur semua shift
+        updates[key]={shifts:d.shifts||[],sendiri:d.sendiri||{},libur:true,liburShift:{}};
+        var shiftsUntukLibur=(d.shifts&&d.shifts.length>0)?d.shifts:SHIFTS;
+        shiftsUntukLibur.forEach(function(sh){
+          updates['absensi/'+tgl+'/'+karId+'_'+sh]={status:'izin',jam:'-',pasien:null};
+        });
+      } else if(d.shifts&&d.shifts.length>0){
+        var liburSh=d.liburShift||{};
+        updates[key]={shifts:d.shifts,sendiri:d.sendiri||{},libur:false,liburShift:liburSh};
+        // Set absensi per shift
+        d.shifts.forEach(function(sh){
+          if(liburSh[sh]){
+            // Shift ini libur
+            updates['absensi/'+tgl+'/'+karId+'_'+sh]={status:'izin',jam:'-',pasien:null};
+          } else {
+            // Shift ini tidak libur — hapus absensi libur otomatis jika ada
+            var ab=getAbsen(karId,tgl,sh);
+            if(ab&&ab.status==='izin'&&ab.jam==='-'){
+              updates['absensi/'+tgl+'/'+karId+'_'+sh]=null;
+            }
+          }
+        });
+        // Hapus libur semua jika sebelumnya libur semua
+        SHIFTS.forEach(function(sh){
+          if(d.shifts.indexOf(sh)===-1){
+            var ab=getAbsen(karId,tgl,sh);
+            if(ab&&ab.status==='izin'&&ab.jam==='-'){
+              updates['absensi/'+tgl+'/'+karId+'_'+sh]=null;
+            }
+          }
+        });
+      } else {
+        updates[key]=null;
+      }
+    });
+    db.ref().update(updates)
+      .then(function(){toast('Jadwal disimpan ✓');renderJadwal();})
+      .catch(function(e){toast('Error: '+e.message);});
+  });
+
+  // ── REKAP ─────────────────────────────────────────────────
+  function initRekap(){
+    var periods=getPeriods(),pSel=document.getElementById('rekap-period');
+    pSel.innerHTML=periods.map(function(p,i){return '<option value="'+i+'">'+p.label+'</option>';}).join('');
+    var active=getActivePeriod(),idx=periods.findIndex(function(p){return p.start===active.start;});
+    if(idx>=0)pSel.value=idx;
+    var kSel=document.getElementById('rekap-kar');
+    kSel.innerHTML='<option value="">Semua Karyawan</option>'+
+      _karyawan.map(function(k){return '<option value="'+k.id+'">'+esc(k.nama)+'</option>';}).join('');
+    renderRekap();
+  }
+  function renderRekap(){
+    var pidx=document.getElementById('rekap-period').value,karF=document.getElementById('rekap-kar').value;
+    var cont=document.getElementById('rekap-content');
+    if(pidx===''){cont.innerHTML='<div class="empty"><div class="ei">📊</div><p>Pilih periode</p></div>';return;}
+    var period=getPeriods()[parseInt(pidx)],dates=getDates(period);
+    var kars=karF?_karyawan.filter(function(k){return k.id==karF;}):_karyawan;
+    var allH=0,allI=0,allS=0;
+    var results=kars.map(function(k){var r=hitungHari(k.id,dates);allH+=r.totalHari;allI+=r.totalIzin;allS+=r.totalSakit;return{kar:k,r:r};});
+    var html='<div style="font-size:12px;font-weight:700;color:var(--teal);margin-bottom:10px">📅 '+period.label+'</div>'+
+      '<div class="stats3"><div class="stat stat-g"><div class="stat-n">'+fmtSkor(allH)+'</div><div class="stat-l">Total Hari</div></div>'+
+      '<div class="stat stat-a"><div class="stat-n">'+allI+'</div><div class="stat-l">Cuti/Libur</div></div>'+
+      '<div class="stat stat-p"><div class="stat-n">'+allS+'</div><div class="stat-l">Sakit</div></div></div>';
+    results.forEach(function(res){
+      var kar=res.kar,r=res.r,sc=fmtSkor(r.totalHari);
+      var sendiriRows='',normalRows='',hasSendiri=false;
+      r.detail.forEach(function(d){
+        var dt=new Date(d.tgl+'T00:00:00');
+        var tglLbl='<span style="font-weight:600">'+dt.getDate()+'</span> <span style="color:var(--muted);font-size:10px">'+DAYS[dt.getDay()].slice(0,3)+'</span>';
+
+        // Baris khusus untuk hari libur (dari jadwal)
+        if(d.isLiburHari){
+          normalRows+='<tr style="background:#fffbeb"><td>'+tglLbl+'</td><td><span class="mini" style="background:#fef3c7;color:#92400e">🏖 Libur</span></td><td>—</td><td><span class="mini" style="background:#fef3c7;color:#92400e">Libur</span></td><td style="text-align:right">—</td></tr>';
+          return;
+        }
+
+        if(!d.shifts||!d.shifts.length)return;
+
+        // Keterangan: hanya libur (izin) dan sakit
+        var ketStr=Object.keys(d.ket).map(function(sh){
+          var ket=d.ket[sh];
+          if(ket==='libur') return '<span class="mini" style="background:#fef3c7;color:#92400e">'+SC[sh].label+':Libur</span>';
+          if(ket==='sakit') return '<span class="mini mini-sakit">'+SC[sh].label+':Sakit</span>';
+          return '';
+        }).filter(Boolean).join(' ');
+
+        d.notes.filter(function(n){return n.type==='sendiri';}).forEach(function(n){
+          hasSendiri=true;
+          var np=n.needsInput||n.pasien===null||n.pasien===undefined;
+          var pasStr=np?'<button class="btn btn-purple btn-sm" data-action="pasien" data-kid="'+kar.id+'" data-tgl="'+d.tgl+'" data-sh="'+n.shift+'">⚠ Input</button>':n.pasien+' px <button class="btn btn-gray btn-sm" data-action="pasien" data-kid="'+kar.id+'" data-tgl="'+d.tgl+'" data-sh="'+n.shift+'">✎</button>';
+          var sv=fmtSkor(n.score);
+          var cls=n.score>=0.5?'v1':n.score>=0.25?'v05':'v0';
+          sendiriRows+='<tr><td>'+tglLbl+'</td><td><span class="mini mini-'+(n.shift==='pagi'?'p':'so')+'">'+SC[n.shift].label+'</span> <span class="mini mini-send">👤</span></td><td>'+pasStr+'</td><td class="val-cell '+cls+'" style="text-align:right">'+sv+'</td></tr>';
+        });
+        var nNotes=d.notes.filter(function(n){return n.type!=='sendiri'&&n.type!=='siang-shift'&&n.type!=='libur-hari';});
+        var hasSiangNote=d.notes.find(function(n){return n.type==='siang-shift';});
+        if(nNotes.length||Object.keys(d.ket).length||hasSiangNote){
+          var hadirPagiSore=(d.normalShTanpaSiang||d.normalSh.filter(function(sh){return sh!=='siang';}));
+          var hs=hadirPagiSore.map(function(sh){return '<span class="mini mini-'+(sh==='pagi'?'p':'so')+'">'+SC[sh].label+'</span>';}).join(' ')||'—';
+          if(hasSiangNote){hs+=' <span class="mini mini-s" style="opacity:.8">Siang✓</span>';}
+          var dsc=nNotes.reduce(function(a,n){return a+n.score;},0);
+          var pend=nNotes.find(function(n){return n.pending;});
+          var prS=nNotes.find(function(n){return n.type==='pool-sore'&&n.pairedWith;});
+          var prP=nNotes.find(function(n){return n.type==='pool-pagi'&&n.pairedWith;});
+          var pt=prS?'<span style="font-size:10px;color:var(--teal)"> ⇌ '+fmtShort(prS.pairedWith)+'</span>':prP?'<span style="font-size:10px;color:var(--teal)"> ⇌ '+fmtShort(prP.pairedWith)+'</span>':'';
+          var vh=pend?'<span style="color:var(--muted);font-size:11px">⏳</span>':dsc>0?'<span class="val-cell '+(dsc>=1?'v1':'v05')+'">'+fmtSkor(dsc)+'</span>':'—';
+          var jadwalStr=d.shifts.map(function(sh){return '<span class="mini mini-'+(sh==='pagi'?'p':sh==='siang'?'s':'so')+'">'+SC[sh].label+'</span>';}).join(' ');
+          normalRows+='<tr><td>'+tglLbl+'</td><td>'+jadwalStr+'</td><td>'+hs+pt+'</td><td>'+ketStr+'</td><td style="text-align:right">'+vh+'</td></tr>';
+        }
+      });
+      // Badge: hari kerja, shift siang, libur per hari, sakit
+      var siangBadge=r.totalSiang?'<span class="bdg" style="background:#d1fae5;color:#065f46">🌤 '+r.totalSiang+' Shift Siang</span>':'';
+      var liburBadge=r.totalLiburHari?'<span class="bdg bdg-izin">🏖 '+r.totalLiburHari+' Hari Libur/Cuti</span>':'';
+      var sakitBadge=r.totalSakit?'<span class="bdg bdg-sakit">🏥 '+r.totalSakit+'x Sakit</span>':'';
+
+      // Kumpulkan sanksi dalam periode ini
+      var sanksiRows='';var totalSanksi=0;
+      dates.forEach(function(tgl){
+        var s=(_absensiAll[tgl]||{})[kar.id+'_sanksi']||null;
+        if(!s)return;
+        var dt=new Date(tgl+'T00:00:00');
+        var tglLbl='<span style="font-weight:600">'+dt.getDate()+'</span> <span style="color:var(--muted);font-size:10px">'+DAYS[dt.getDay()].slice(0,3)+'</span>';
+        totalSanksi+=Number(s.nominal)||0;
+        sanksiRows+='<tr style="background:#fff1f2"><td>'+tglLbl+'</td><td>'+esc(s.alasan)+'</td><td style="text-align:right;color:#991b1b;font-weight:700">Rp '+Number(s.nominal).toLocaleString('id-ID')+'</td></tr>';
+      });
+      var sanksiSectionHtml=sanksiRows?
+        '<div style="padding:4px 14px 10px">'+
+          '<div class="sec-title" style="margin-bottom:6px;color:#991b1b">✂️ Catatan Sanksi Potong Gaji</div>'+
+          '<div class="tbl-wrap"><table>'+
+            '<tr><th>Tanggal</th><th>Alasan</th><th style="text-align:right">Potongan</th></tr>'+
+            sanksiRows+
+            '<tr style="background:#fee2e2"><td colspan="2" style="font-weight:700;color:#991b1b">Total Potongan</td><td style="text-align:right;font-weight:700;color:#991b1b">Rp '+totalSanksi.toLocaleString('id-ID')+'</td></tr>'+
+          '</table></div></div>':'';
+      var sanksiHeaderBadge=totalSanksi?'<span class="sanksi-badge">✂️ Potong Rp '+totalSanksi.toLocaleString('id-ID')+'</span>':'';
+      var sanksiSubInfo=totalSanksi?'<div style="font-size:10px;color:#991b1b;margin-top:1px">✂️ Potongan Rp '+totalSanksi.toLocaleString('id-ID')+'</div>':'';
+
+      html+='<div class="rkar"><div class="rkar-hd" onclick="this.nextElementSibling.classList.toggle(\'on\')">'+
+        '<div class="av" style="background:'+kar.color+';width:36px;height:36px;font-size:12px">'+inisial(kar.nama)+'</div>'+
+        '<div style="flex:1">'+
+          '<div style="font-weight:600;font-size:14px">'+esc(kar.nama)+'</div>'+
+          '<div style="font-size:11px;color:var(--muted)">'+esc(kar.jabatan)+'</div>'+
+          (r.totalSiang?'<div style="font-size:10px;color:#065f46;margin-top:2px">🌤 '+r.totalSiang+' shift siang</div>':'')+
+          (r.totalLiburHari?'<div style="font-size:10px;color:#92400e;margin-top:1px">🏖 '+r.totalLiburHari+' hari libur/cuti</div>':'')+
+          sanksiSubInfo+
+        '</div>'+
+        '<div style="text-align:right;margin-right:8px"><div class="score-big">'+sc+'</div><div class="score-lbl">hari kerja</div></div>'+
+        '<div style="color:var(--muted)">▾</div></div>'+
+        '<div class="rkar-body">'+
+          '<div style="display:flex;gap:6px;flex-wrap:wrap;padding:10px 14px;border-bottom:1px solid var(--border)">'+
+            '<span class="bdg bdg-hadir">✓ '+sc+' hari</span>'+
+            siangBadge+liburBadge+sakitBadge+sanksiHeaderBadge+
+          '</div>'+
+          (hasSendiri?'<div style="padding:10px 14px 4px"><div class="sec-title" style="margin-bottom:6px">👤 Shift Jaga Sendiri</div>'+
+            '<div class="tbl-wrap"><table><tr><th>Tanggal</th><th>Shift</th><th>Pasien</th><th style="text-align:right">Nilai</th></tr>'+sendiriRows+'</table></div></div>':'')+
+          '<div style="padding:'+(hasSendiri?'4':'10')+'px 14px 10px">'+
+            (hasSendiri?'<div class="sec-title" style="margin-bottom:6px">📋 Shift Normal</div>':'')+
+            '<div class="tbl-wrap"><table><tr><th>Tanggal</th><th>Jadwal</th><th>Hadir/Pasangan</th><th>Ket.</th><th style="text-align:right">Nilai</th></tr>'+
+            (normalRows||'<tr><td colspan="5" style="text-align:center;color:var(--muted);padding:14px">Tidak ada data</td></tr>')+'</table></div></div>'+
+          sanksiSectionHtml+
+        '</div></div>';
+    });
+    cont.innerHTML=html;
+    // Event delegation untuk tombol di rekap — gunakan string ID bukan parseInt
+    cont.querySelectorAll('[data-action="pasien"]').forEach(function(btn){
+      btn.addEventListener('click',function(){
+        var kid=btn.getAttribute('data-kid'); // string, bukan parseInt
+        var tgl=btn.getAttribute('data-tgl');
+        var sh=btn.getAttribute('data-sh');
+        openPasModal(kid,tgl,sh);
+      });
+    });
+  }
+
+  // ── KARYAWAN ──────────────────────────────────────────────
+  var _nextColorIdx=0;
+  document.getElementById('btn-tambah-kar').addEventListener('click',function(){
+    var nama=document.getElementById('kn').value.trim(),jabatan=document.getElementById('kj').value.trim();
+    if(!nama||!jabatan){toast('Nama & jabatan harus diisi');return;}
+    // Generate id unik
+    var newId=db.ref('karyawan').push().key;
+    var color=COLORS[(_karyawan.length)%COLORS.length];
+    db.ref('karyawan/'+newId).set({id:newId,nama:nama,jabatan:jabatan,color:color})
+      .then(function(){document.getElementById('kn').value='';document.getElementById('kj').value='';toast('Karyawan ditambahkan ✓');})
+      .catch(function(e){toast('Error: '+e.message);});
+  });
+
+  var _ekCtx=null;
+  function openEditKar(id){
+    var k=_karyawan.find(function(x){return x.id===id;});if(!k)return;
+    _ekCtx=id;
+    document.getElementById('m-ek-sub').textContent=k.nama;
+    document.getElementById('ek-nm').value=k.nama;
+    document.getElementById('ek-jb').value=k.jabatan;
+    document.getElementById('m-ek').classList.add('on');
+  }
+  document.getElementById('ek-save').addEventListener('click',function(){
+    if(!_ekCtx)return;
+    var nama=document.getElementById('ek-nm').value.trim(),jabatan=document.getElementById('ek-jb').value.trim();
+    if(!nama||!jabatan){toast('Nama & jabatan harus diisi');return;}
+    db.ref('karyawan/'+_ekCtx).update({nama:nama,jabatan:jabatan})
+      .then(function(){closeModal('m-ek');_ekCtx=null;toast('Data diperbarui ✓');})
+      .catch(function(e){toast('Error: '+e.message);});
+  });
+  document.getElementById('ek-batal').addEventListener('click',function(){closeModal('m-ek');});
+
+  function hapusKar(id){
+    if(!confirm('Hapus karyawan ini?'))return;
+    db.ref('karyawan/'+id).remove().then(function(){toast('Karyawan dihapus');});
+  }
+
+  function renderDaftarKar(){
+    document.getElementById('jml-kar').textContent=_karyawan.length;
+    var cont=document.getElementById('daftar-kar');
+    if(!_karyawan.length){cont.innerHTML='<div class="empty"><div class="ei">👥</div><p>Belum ada karyawan</p></div>';return;}
+    var html=_karyawan.map(function(k){
+      var pinStatus=k.pin?'<span style="font-size:10px;color:var(--green);font-weight:600">🔐 PIN aktif</span>':'<span style="font-size:10px;color:#dc2626;font-weight:600">⚠ Belum ada PIN</span>';
+      return '<div class="kar-item">'+
+        '<div class="av" style="background:'+k.color+'">'+inisial(k.nama)+'</div>'+
+        '<div style="flex:1">'+
+          '<div style="font-weight:600">'+esc(k.nama)+'</div>'+
+          '<div style="font-size:11px;color:var(--muted)">'+esc(k.jabatan)+'</div>'+
+          '<div style="margin-top:2px">'+pinStatus+'</div>'+
+        '</div>'+
+        '<div style="display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end">'+
+          '<button class="btn btn-sm" style="background:#f0fdf4;color:#166534;border:1px solid #86efac" data-action="set-pin" data-kid="'+k.id+'">🔐 PIN</button>'+
+          '<button class="btn btn-outline btn-sm" data-action="edit-kar" data-kid="'+k.id+'">✎ Edit</button>'+
+          '<button class="btn btn-red btn-sm" data-action="hapus-kar" data-kid="'+k.id+'">Hapus</button>'+
+        '</div>'+
+      '</div>';
+    }).join('');
+    cont.innerHTML=html;
+    cont.querySelectorAll('[data-action="edit-kar"]').forEach(function(btn){
+      btn.addEventListener('click',function(){openEditKar(btn.getAttribute('data-kid'));});
+    });
+    cont.querySelectorAll('[data-action="hapus-kar"]').forEach(function(btn){
+      btn.addEventListener('click',function(){hapusKar(btn.getAttribute('data-kid'));});
+    });
+    cont.querySelectorAll('[data-action="set-pin"]').forEach(function(btn){
+      btn.addEventListener('click',function(){openPinModal(btn.getAttribute('data-kid'));});
+    });
+  }
+
+  // ── Modal Sanksi Potong Gaji ──────────────────────────────
+  var _sanksiCtx=null;
+  function openSanksiModal(karId,tgl){
+    var k=_karyawan.find(function(x){return String(x.id)===String(karId);});
+    if(!k)return;
+    _sanksiCtx={karId:karId,tgl:tgl};
+    document.getElementById('m-sanksi-sub').textContent=k.nama+' · '+fmtDate(tgl);
+    // Cek sanksi yang sudah ada
+    var existing=(_absensiAll[tgl]||{})[karId+'_sanksi']||null;
+    var existDiv=document.getElementById('sanksi-existing');
+    var hapusBtn=document.getElementById('sanksi-hapus');
+    if(existing){
+      existDiv.style.display='block';
+      existDiv.textContent='Sanksi sebelumnya: Rp '+Number(existing.nominal).toLocaleString('id-ID')+' — '+existing.alasan;
+      document.getElementById('sanksi-nominal').value=existing.nominal;
+      document.getElementById('sanksi-alasan').value=existing.alasan;
+      hapusBtn.style.display='block';
+    } else {
+      existDiv.style.display='none';
+      document.getElementById('sanksi-nominal').value='';
+      document.getElementById('sanksi-alasan').value='';
+      hapusBtn.style.display='none';
+    }
+    document.getElementById('m-sanksi').classList.add('on');
+  }
+  document.getElementById('sanksi-save').addEventListener('click',function(){
+    if(!_sanksiCtx)return;
+    var nominal=parseInt(document.getElementById('sanksi-nominal').value)||0;
+    var alasan=document.getElementById('sanksi-alasan').value.trim();
+    if(!nominal||!alasan){toast('Nominal dan alasan harus diisi');return;}
+    var k=_karyawan.find(function(x){return String(x.id)===String(_sanksiCtx.karId);});
+    db.ref('absensi/'+_sanksiCtx.tgl+'/'+_sanksiCtx.karId+'_sanksi').set({
+      nominal:nominal, alasan:alasan, nama:k?k.nama:''
+    }).then(function(){
+      closeModal('m-sanksi');_sanksiCtx=null;
+      toast('✂️ Sanksi dicatat: Rp '+nominal.toLocaleString('id-ID'));
+    }).catch(function(e){toast('Error: '+e.message);});
+  });
+  document.getElementById('sanksi-hapus').addEventListener('click',function(){
+    if(!_sanksiCtx)return;
+    if(!confirm('Hapus catatan sanksi ini?'))return;
+    db.ref('absensi/'+_sanksiCtx.tgl+'/'+_sanksiCtx.karId+'_sanksi').remove()
+      .then(function(){closeModal('m-sanksi');_sanksiCtx=null;toast('Sanksi dihapus');})
+      .catch(function(e){toast('Error: '+e.message);});
+  });
+  document.getElementById('sanksi-batal').addEventListener('click',function(){closeModal('m-sanksi');_sanksiCtx=null;});
+  var _pinKarCtx=null;
+  function openPinModal(karId){
+    var k=_karyawan.find(function(x){return String(x.id)===String(karId);});
+    if(!k)return;
+    _pinKarCtx=karId;
+    document.getElementById('m-pin-sub').textContent=k.nama+(k.pin?' · PIN saat ini: '+k.pin:'· Belum ada PIN');
+    document.getElementById('pin-input').value=k.pin||'';
+    document.getElementById('m-pin').classList.add('on');
+    setTimeout(function(){document.getElementById('pin-input').focus();},200);
+  }
+  document.getElementById('pin-save').addEventListener('click',function(){
+    if(!_pinKarCtx)return;
+    var pin=document.getElementById('pin-input').value.trim();
+    if(pin.length!==4||isNaN(pin)){toast('PIN harus 4 angka');return;}
+    db.ref('karyawan/'+_pinKarCtx).update({pin:pin})
+      .then(function(){closeModal('m-pin');_pinKarCtx=null;toast('PIN berhasil disimpan ✓');})
+      .catch(function(e){toast('Error: '+e.message);});
+  });
+  document.getElementById('pin-batal-modal').addEventListener('click',function(){closeModal('m-pin');_pinKarCtx=null;});
+
+  // INIT
+  window._renderMonitor   = renderMonitor;
+  window._initRekap       = initRekap;
+  window._renderDaftarKar = renderDaftarKar;
+  window._initJadwal      = initJadwal;
+  window._renderJadwal    = renderJadwal;
+  window._renderRekap     = renderRekap;
+  window._appReady        = true;
+  renderMonitor();
+
+})();
+
+// ── Blokir zoom gesture (iOS & Android) ──────────────────
+document.addEventListener('touchmove', function(e){
+  if(e.touches.length > 1) e.preventDefault();
+}, { passive: false });
+
+var _lastTap = 0;
+document.addEventListener('touchend', function(e){
+  var tag = e.target.tagName.toLowerCase();
+  if(tag === 'input' || tag === 'select' || tag === 'textarea') return;
+  var now = Date.now();
+  if(now - _lastTap < 300){ e.preventDefault(); }
+  _lastTap = now;
+}, { passive: false });
+
+document.addEventListener('gesturestart', function(e){
+  e.preventDefault();
+}, { passive: false });
+</script>
+</body>
+</html>
